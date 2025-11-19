@@ -37,7 +37,17 @@ class _HomeScreenState extends State<HomeScreen> {
     @override
     Widget build(BuildContext context) {
         return Scaffold(
-            appBar: AppBar(title: const Text("Lista wpisów")),
+            appBar: AppBar(
+                title: const Text("Lista wpisów"),
+                actions: [
+                    IconButton(
+                        icon: const Icon(Icons.add),
+                        onPressed: () {
+                            Navigator.pushNamed(context, "/add");
+                        },
+                    )
+                ],
+            ),
 
             body: loading
                 ? const Center(child: CircularProgressIndicator())

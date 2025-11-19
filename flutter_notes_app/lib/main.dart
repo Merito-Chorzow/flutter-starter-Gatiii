@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
 import 'screens/detail_screen.dart';
+import 'screens/add_entry_screen.dart';
 
 void main() {
   runApp(const NotesApp());
@@ -21,6 +22,7 @@ class NotesApp extends StatelessWidget {
           final id = ModalRoute.of(context)!.settings.arguments as int;
           return DetailScreen(postId: id);
         },
+        '/add': (context) => const AddEntryScreen(),
       },
     );
   }
