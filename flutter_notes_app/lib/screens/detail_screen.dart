@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class DetailScreen extends StatefulWidget {
-  final int postId;
+  final Map post;
 
-  const DetailScreen({super.key, required this.postId});
+  const DetailScreen({super.key, required this.post});
 
   @override
   State<DetailScreen> createState() => _DetailScreenState();
@@ -23,9 +23,18 @@ class _DetailScreenState extends State<DetailScreen> {
   }
 
   Future<void> loadPost() async {
+    if (widget.post["id"] > 1000) {
+      setState(() {
+        post = Map<String, dynamic>.from(widget.post);
+        loading = false;
+      });
+      return;
+    }
+
     try {
-      final response = await http
-          .get(Uri.parse("https://dummyjson.com/posts/${widget.postId}"));
+      final response = await http.get(
+        Uri.parse("https://dummyjson.com/posts/${widget.post["id"]}"),
+      );
 
       if (response.statusCode == 200) {
         setState(() {
@@ -40,7 +49,7 @@ class _DetailScreenState extends State<DetailScreen> {
       }
     } catch (e) {
       setState(() {
-        error = "Blad pobierania danych";
+        error = "Błąd pobierania danych";
         loading = false;
       });
     }
@@ -49,9 +58,7 @@ class _DetailScreenState extends State<DetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Szczegoly wpisu"),
-      ),
+      appBar: AppBar(title: const Text("Szczegóły wpisu")),
 
       body: loading
           ? const Center(child: CircularProgressIndicator())
@@ -72,19 +79,24 @@ class _DetailScreenState extends State<DetailScreen> {
 
                       const SizedBox(height: 16),
                       const Divider(),
-
                       const SizedBox(height: 16),
+
                       Text(
-                        post!["body"],
+                        post!["body"] ?? "Brak treści",
                         style: const TextStyle(fontSize: 16),
                       ),
 
                       const Spacer(),
+                      Text("ID: ${post!["id"]}",
+                          style: const TextStyle(color: Colors.grey)),
+                        
+                      const SizedBox(height: 12),
 
-                      Text(
-                        "ID: ${post!["id"]}",
-                        style: TextStyle(color: Colors.grey[600]),
-                      )
+                      if (post!.containsKey("lat") && post!.containsKey("lng"))
+                        Text(
+                          "Lokalizacja: ${post!["lat"]}, ${post!["lng"]}",
+                          style: const TextStyle(color: Colors.blueGrey),
+                        ),
                     ],
                   ),
                 ),

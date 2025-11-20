@@ -104,8 +104,12 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
 
             ElevatedButton(
               onPressed: () {
-                // Na razie tylko wracamy
-                Navigator.pop(context);
+                Navigator.pop(context, {
+                  "title": titleController.text,
+                  "body": bodyController.text,
+                  "lat": position?.latitude,
+                  "lng": position?.longitude,
+                });
               },
               child: const Text("Zapisz wpis"),
             )

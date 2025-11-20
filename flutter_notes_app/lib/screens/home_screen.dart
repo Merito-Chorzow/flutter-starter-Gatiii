@@ -22,10 +22,10 @@ class _HomeScreenState extends State<HomeScreen> {
     void loadData() async {
         try {
             final data = await ApiService().fetchPosts();
-        setState(() {
-            posts = data;
-            loading = false;
-        });
+            setState(() {
+                posts = data;
+                loading = false;
+            });
         } catch (e) {
             setState(() {
                 error = "Nie udało się pobrać danych";
@@ -42,10 +42,28 @@ class _HomeScreenState extends State<HomeScreen> {
                 actions: [
                     IconButton(
                         icon: const Icon(Icons.add),
-                        onPressed: () {
-                            Navigator.pushNamed(context, "/add");
+                        onPressed: () async {
+                            final newEntry = await Navigator.pushNamed(context, "/add");
+
+                            if (newEntry != null && newEntry is Map) {
+                                setState(() {
+                                    posts.insert(0, {
+                                        "id": posts.length + 1000,
+                                        "title": newEntry["title"],
+                                        "body": newEntry["body"],
+                                        "lat": newEntry["lat"],
+                                        "lng": newEntry["lng"],
+                                    });
+                                });
+                            }
                         },
-                    )
+                    ),
+                    IconButton(
+                        icon: const Icon(Icons.settings),
+                        onPressed: () {
+                            Navigator.pushNamed(context, "/settings");
+                        },
+                    ),
                 ],
             ),
 
@@ -58,18 +76,18 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemBuilder: (context, index) {
                             final item = posts[index];
                             return ListTile(
-                            title: Text(item["title"]),
-                            subtitle: Text("ID: ${item["id"]}"),
-                            onTap: () {
-                                Navigator.pushNamed(
-                                    context,
-                                    "/details",
-                                    arguments: item["id"],
-                                );
-                            },
-                        );
-                    },
-                ),
-        );
+                                title: Text(item["title"]),
+                                subtitle: Text("ID: ${item["id"]}"),
+                                onTap: () {
+                                    Navigator.pushNamed(
+                                        context,
+                                        "/details",
+                                        arguments: item,
+                                    );
+                                },
+                            );
+                        },
+                    ),
+            );
+        }
     }
-}
